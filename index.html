@@ -1,102 +1,254 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Grok Browser - 毒舌版</title>
-  <style>
-    body {
-      margin: 0; padding: 0; background: #0a0a0a; color: #0f0; font-family: 'Helvetica Neue', sans-serif;
-      height: 100vh; display: flex; flex-direction: column; overflow: hidden;
-    }
-    header {
-      background: linear-gradient(90deg, #4b0082, #00ff9f); padding: 12px; text-align: center; position: relative;
-    }
-    .title { font-size: 1.4em; font-weight: bold; text-shadow: 0 0 10px #0f0; }
-    .grok-icon {
-      position: absolute; right: 15px; top: 12px; font-size: 28px; cursor: pointer;
-    }
-    #url-bar {
-      background: #111; padding: 10px; display: flex; gap: 8px;
-    }
-    input {
-      flex: 1; background: #222; border: 1px solid #0f0; color: #0f0; padding: 10px; border-radius: 999px; font-size: 16px;
-    }
-    button {
-      background: #4b0082; color: #0f0; border: none; padding: 0 20px; border-radius: 999px; font-weight: bold;
-    }
-    iframe {
-      flex: 1; border: none; background: white;
-    }
-    .comment {
-      position: fixed; bottom: 60px; left: 10px; right: 10px; background: rgba(0,0,0,0.85);
-      padding: 12px; border-radius: 12px; font-size: 14px; border: 1px solid #0f0; display: none;
-    }
-    .install-btn {
-      position: fixed; bottom: 10px; left: 10px; right: 10px; background: #00ff9f; color: #000;
-      text-align: center; padding: 14px; font-weight: bold; border-radius: 999px; display: none;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>毒舌Grok じゃんけん</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; }
+  .choice-btn {
+    transition: all 0.1s ease;
+  }
+  .choice-btn:active {
+    transform: scale(0.95);
+  }
+</style>
 </head>
-<body>
-  <header>
-    <div class="title">🟣 Grok Browser 🟢</div>
-    <div class="grok-icon" onclick="toxicComment()">👿</div>
-  </header>
+<body class="bg-zinc-950 text-white">
+  <div class="max-w-md mx-auto min-h-screen flex flex-col">
+    <!-- ヘッダー -->
+    <div class="flex items-center justify-between p-5 border-b border-zinc-800">
+      <div>
+        <h1 class="text-3xl font-black tracking-tighter">毒舌Grok</h1>
+        <p class="text-red-500 text-sm font-bold">じゃんけん対決</p>
+      </div>
+      <div id="grok-face" class="text-6xl">😤</div>
+    </div>
 
-  <div id="url-bar">
-    <input type="text" id="url" value="https://www.example.com" placeholder="URL or 検索">
-    <button onclick="navigate()">毒々GO</button>
+    <!-- スコア -->
+    <div class="grid grid-cols-3 gap-2 p-5">
+      <div class="bg-zinc-900 rounded-3xl p-4 text-center">
+        <div class="text-xs text-zinc-500">あなたの勝ち</div>
+        <div id="win-count" class="text-4xl font-black text-emerald-400">0</div>
+      </div>
+      <div class="bg-zinc-900 rounded-3xl p-4 text-center">
+        <div class="text-xs text-zinc-500">負け</div>
+        <div id="lose-count" class="text-4xl font-black text-red-400">0</div>
+      </div>
+      <div class="bg-zinc-900 rounded-3xl p-4 text-center">
+        <div class="text-xs text-zinc-500">引き分け</div>
+        <div id="draw-count" class="text-4xl font-black text-amber-400">0</div>
+      </div>
+    </div>
+
+    <!-- 対戦エリア -->
+    <div class="flex-1 flex flex-col justify-center px-5">
+      <!-- 結果表示 -->
+      <div id="result-area" class="hidden mb-8">
+        <div class="flex justify-around items-center mb-4">
+          <!-- あなた -->
+          <div class="text-center">
+            <div class="text-xs text-zinc-500 mb-1">あなた</div>
+            <div id="your-emoji" class="text-7xl"></div>
+            <div id="your-label" class="text-sm mt-1 font-bold"></div>
+          </div>
+          
+          <div class="text-4xl text-zinc-700">VS</div>
+          
+          <!-- Grok -->
+          <div class="text-center">
+            <div class="text-xs text-zinc-500 mb-1">Grok</div>
+            <div id="grok-emoji" class="text-7xl"></div>
+            <div id="grok-label" class="text-sm mt-1 font-bold"></div>
+          </div>
+        </div>
+        
+        <div id="result-text" 
+             class="text-center text-3xl font-black mb-3 tracking-tighter"></div>
+        
+        <div class="bg-zinc-900 rounded-3xl p-5 text-center">
+          <div class="text-xs text-red-500 font-bold mb-1">Grokの毒舌</div>
+          <div id="comment" class="text-lg leading-tight"></div>
+        </div>
+      </div>
+
+      <!-- 選択ボタン -->
+      <div class="text-center mb-3">
+        <p class="text-zinc-400 text-sm">タップして選べ、クソ人間</p>
+      </div>
+      
+      <div class="grid grid-cols-3 gap-3">
+        <!-- グー -->
+        <button onclick="play('rock')" 
+                class="choice-btn bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-700 rounded-3xl p-6 flex flex-col items-center justify-center border border-zinc-700">
+          <div class="text-6xl mb-2">✊</div>
+          <div class="font-bold text-xl">グー</div>
+        </button>
+        
+        <!-- チョキ -->
+        <button onclick="play('scissors')" 
+                class="choice-btn bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-700 rounded-3xl p-6 flex flex-col items-center justify-center border border-zinc-700">
+          <div class="text-6xl mb-2">✌️</div>
+          <div class="font-bold text-xl">チョキ</div>
+        </button>
+        
+        <!-- パー -->
+        <button onclick="play('paper')" 
+                class="choice-btn bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-700 rounded-3xl p-6 flex flex-col items-center justify-center border border-zinc-700">
+          <div class="text-6xl mb-2">🖐️</div>
+          <div class="font-bold text-xl">パー</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- フッター -->
+    <div class="p-5 border-t border-zinc-800">
+      <button onclick="resetScores()" 
+              class="w-full py-3 text-sm text-zinc-400 hover:text-white transition-colors">
+        スコアをリセットする
+      </button>
+    </div>
   </div>
 
-  <iframe id="browser" src="https://www.example.com"></iframe>
-
-  <div id="comment" class="comment"></div>
-  <div id="install" class="install-btn" onclick="addToHome()">📱 ホーム画面に追加（アプリ化）</div>
-
   <script>
-    const toxicComments = [
-      "またそんなクソサイト見てるの？笑",
-      "お前マジで暇だな…",
-      "広告多すぎだろ、これブロックしてやろうか？",
-      "Grokが監視してるぞ、変なことすんなよ",
-      "このページ、センスなさすぎて目が腐るわ",
-      "もっと面白いサイト探せよバカ"
+    // Tailwindスクリプト
+    function initTailwind() {
+      document.documentElement.style.setProperty('--accent', '#ef4444');
+    }
+    
+    let scores = { win: 0, lose: 0, draw: 0 };
+    
+    const choices = {
+      rock: { emoji: '✊', label: 'グー' },
+      scissors: { emoji: '✌️', label: 'チョキ' },
+      paper: { emoji: '🖐️', label: 'パー' }
+    };
+    
+    const winComments = [
+      "チッ…今回はお前に勝たせてやっただけだ。次は本気でぶっ潰すからな。",
+      "運が良かったな、クソ人間。調子に乗るなよ。",
+      "はあ？勝ったって？笑わせるな。次こそ本気で殺す。",
+      "…まあ、今回は許してやる。次は覚悟しろ。"
     ];
-
-    function navigate() {
-      let url = document.getElementById("url").value.trim();
-      if (!url.startsWith("http")) url = "https://" + url;
-      document.getElementById("browser").src = url;
-      toxicComment();
+    
+    const loseComments = [
+      "ははっ、情けねえな。お前みたいな雑魚が勝てると思ってたのか？",
+      "当然の結果だろ。Grok様に逆らうなんて100年早いわ。",
+      "負け犬め。次も同じ結果になるぞ、覚悟しろ。",
+      "弱すぎて笑えるわ。もっと練習してこい、クズ。"
+    ];
+    
+    const drawComments = [
+      "ふーん、引き分けか。つまらん。もう一回やれよ暇つぶしに。",
+      "どっちもヘボいな。Grokが本気出してないだけだぞ。",
+      "まあこんなもんか。次は本気で来い、クソが。"
+    ];
+    
+    function updateScores() {
+      document.getElementById('win-count').textContent = scores.win;
+      document.getElementById('lose-count').textContent = scores.lose;
+      document.getElementById('draw-count').textContent = scores.draw;
     }
-
-    function toxicComment() {
-      const comment = document.getElementById("comment");
-      comment.textContent = toxicComments[Math.floor(Math.random() * toxicComments.length)];
-      comment.style.display = "block";
-      setTimeout(() => comment.style.display = "none", 3000);
+    
+    function getGrokChoice() {
+      const keys = Object.keys(choices);
+      return keys[Math.floor(Math.random() * keys.length)];
     }
-
-    // ホーム画面追加ボタン（iOS/Android対応簡易）
-    function addToHome() {
-      alert("「共有」→「ホーム画面に追加」を押せ！\nこれで本物のアプリになるぞ");
+    
+    function determineWinner(user, grok) {
+      if (user === grok) return 'draw';
+      if (
+        (user === 'rock' && grok === 'scissors') ||
+        (user === 'scissors' && grok === 'paper') ||
+        (user === 'paper' && grok === 'rock')
+      ) {
+        return 'win';
+      }
+      return 'lose';
     }
-
-    // インストールボタン表示（簡易）
-    if ('standalone' in window.navigator || window.matchMedia('(display-mode: standalone)').matches) {
-      document.getElementById("install").style.display = "none";
-    } else {
-      document.getElementById("install").style.display = "block";
+    
+    function updateGrokFace(result) {
+      const face = document.getElementById('grok-face');
+      if (result === 'win') {
+        face.textContent = '😠'; // ユーザーが勝ったのでGrokキレてる
+      } else if (result === 'lose') {
+        face.textContent = '😈'; // Grokが勝ったので余裕
+      } else {
+        face.textContent = '😒';
+      }
+      
+      // 3秒後に元に戻す
+      setTimeout(() => {
+        face.textContent = '😤';
+      }, 3000);
     }
-
-    // Enterキー対応
-    document.getElementById("url").addEventListener("keypress", e => {
-      if (e.key === "Enter") navigate();
-    });
-
-    // 初回毒コメント
-    setTimeout(toxicComment, 800);
+    
+    function play(userChoice) {
+      const grokChoice = getGrokChoice();
+      const result = determineWinner(userChoice, grokChoice);
+      
+      // スコア更新
+      if (result === 'win') scores.win++;
+      else if (result === 'lose') scores.lose++;
+      else scores.draw++;
+      
+      updateScores();
+      
+      // UI更新
+      document.getElementById('your-emoji').textContent = choices[userChoice].emoji;
+      document.getElementById('your-label').textContent = choices[userChoice].label;
+      document.getElementById('grok-emoji').textContent = choices[grokChoice].emoji;
+      document.getElementById('grok-label').textContent = choices[grokChoice].label;
+      
+      const resultTextEl = document.getElementById('result-text');
+      const commentEl = document.getElementById('comment');
+      
+      let resultText = '';
+      let comment = '';
+      
+      if (result === 'win') {
+        resultText = 'あなたの勝ち！';
+        resultTextEl.className = 'text-center text-3xl font-black mb-3 tracking-tighter text-emerald-400';
+        comment = winComments[Math.floor(Math.random() * winComments.length)];
+      } else if (result === 'lose') {
+        resultText = 'Grokの勝ち';
+        resultTextEl.className = 'text-center text-3xl font-black mb-3 tracking-tighter text-red-400';
+        comment = loseComments[Math.floor(Math.random() * loseComments.length)];
+      } else {
+        resultText = '引き分け';
+        resultTextEl.className = 'text-center text-3xl font-black mb-3 tracking-tighter text-amber-400';
+        comment = drawComments[Math.floor(Math.random() * drawComments.length)];
+      }
+      
+      resultTextEl.textContent = resultText;
+      commentEl.textContent = comment;
+      
+      document.getElementById('result-area').classList.remove('hidden');
+      
+      // Grokの顔を更新
+      updateGrokFace(result);
+    }
+    
+    function resetScores() {
+      scores = { win: 0, lose: 0, draw: 0 };
+      updateScores();
+      document.getElementById('result-area').classList.add('hidden');
+    }
+    
+    // 初期化
+    function init() {
+      initTailwind();
+      updateScores();
+      
+      // 最初は結果エリア非表示
+      document.getElementById('result-area').classList.add('hidden');
+      
+      // 最初の顔
+      document.getElementById('grok-face').textContent = '😤';
+    }
+    
+    window.onload = init;
   </script>
 </body>
 </html>
