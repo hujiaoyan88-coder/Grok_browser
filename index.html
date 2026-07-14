@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Grok 宇宙じゃんけん</title>
+<title>毒舌Grok 宇宙じゃんけん</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   body {
@@ -22,8 +22,7 @@
   
   .fixed-bottom {
     position: fixed;
-    bottom: 0;
-    left: 0; right: 0;
+    bottom: 0; left: 0; right: 0;
     z-index: 30;
     padding-bottom: env(safe-area-inset-bottom);
   }
@@ -34,75 +33,75 @@
   
   <div class="max-w-md mx-auto relative z-10">
     <!-- ヘッダー -->
-    <div class="flex items-center justify-between p-5 border-b border-indigo-500/30 bg-black/80 backdrop-blur-md">
+    <div class="flex items-center justify-between p-4 border-b border-indigo-500/30 bg-black/80 backdrop-blur-md">
       <div>
-        <h1 class="text-4xl font-black tracking-tighter neon-text">Grok</h1>
-        <p class="text-indigo-400 text-sm font-bold tracking-widest">COSMIC JAN-KEN</p>
+        <h1 class="text-3xl font-black tracking-tighter neon-text">毒舌Grok</h1>
+        <p class="text-indigo-400 text-xs font-bold tracking-widest">COSMIC JAN-KEN</p>
       </div>
-      <div id="grok-face" class="text-6xl drop-shadow-[0_0_15px_#6366f1]">🪐</div>
+      <div id="grok-face" class="text-5xl drop-shadow-[0_0_15px_#6366f1]">🪐</div>
     </div>
 
     <!-- スコア -->
-    <div class="grid grid-cols-3 gap-3 p-5 bg-black/40">
-      <div class="bg-black/60 backdrop-blur-md border border-indigo-500/30 rounded-3xl p-4 text-center">
-        <div class="text-xs text-indigo-400">勝ち</div>
-        <div id="win-count" class="text-4xl font-black text-emerald-400">0</div>
+    <div class="grid grid-cols-3 gap-2 p-4 bg-black/40">
+      <div class="bg-black/60 backdrop-blur-md border border-indigo-500/30 rounded-3xl p-3 text-center">
+        <div class="text-[10px] text-indigo-400">勝ち</div>
+        <div id="win-count" class="text-3xl font-black text-emerald-400">0</div>
       </div>
-      <div class="bg-black/60 backdrop-blur-md border border-indigo-500/30 rounded-3xl p-4 text-center">
-        <div class="text-xs text-indigo-400">負け</div>
-        <div id="lose-count" class="text-4xl font-black text-red-400">0</div>
+      <div class="bg-black/60 backdrop-blur-md border border-indigo-500/30 rounded-3xl p-3 text-center">
+        <div class="text-[10px] text-indigo-400">負け</div>
+        <div id="lose-count" class="text-3xl font-black text-red-400">0</div>
       </div>
-      <div class="bg-black/60 backdrop-blur-md border border-indigo-500/30 rounded-3xl p-4 text-center">
-        <div class="text-xs text-indigo-400">引き分け</div>
-        <div id="draw-count" class="text-4xl font-black text-amber-400">0</div>
+      <div class="bg-black/60 backdrop-blur-md border border-indigo-500/30 rounded-3xl p-3 text-center">
+        <div class="text-[10px] text-indigo-400">引き分け</div>
+        <div id="draw-count" class="text-3xl font-black text-amber-400">0</div>
       </div>
     </div>
 
     <!-- メイン -->
-    <div class="px-5 pt-6 pb-4">
-      <div id="result-area" class="hidden bg-black/80 backdrop-blur-2xl border border-indigo-400/50 rounded-3xl p-6 shadow-2xl mx-auto max-w-[340px]">
-        <div class="flex justify-around items-center mb-5">
+    <div class="px-4 pt-4 pb-6">
+      <div id="result-area" class="hidden bg-black/80 backdrop-blur-2xl border border-indigo-400/50 rounded-3xl p-5 shadow-2xl">
+        <div class="flex justify-around items-center mb-4">
           <div class="text-center">
-            <div class="text-xs text-indigo-400 mb-1">YOU</div>
-            <div id="your-emoji" class="text-7xl"></div>
-            <div id="your-label" class="text-xs mt-2 font-bold text-white/90"></div>
+            <div class="text-[10px] text-indigo-400">YOU</div>
+            <div id="your-emoji" class="text-6xl"></div>
+            <div id="your-label" class="text-[10px] mt-1 font-bold text-white/90"></div>
           </div>
-          <div class="text-4xl text-indigo-500/60 font-light">VS</div>
+          <div class="text-3xl text-indigo-500/60 font-light mt-6">VS</div>
           <div class="text-center">
-            <div class="text-xs text-indigo-400 mb-1">GROK</div>
-            <div id="grok-emoji" class="text-7xl"></div>
-            <div id="grok-label" class="text-xs mt-2 font-bold text-white/90"></div>
+            <div class="text-[10px] text-indigo-400">GROK</div>
+            <div id="grok-emoji" class="text-6xl"></div>
+            <div id="grok-label" class="text-[10px] mt-1 font-bold text-white/90"></div>
           </div>
         </div>
         
-        <div id="result-text" class="text-center text-3xl font-black mb-4 tracking-tighter neon-text"></div>
+        <div id="result-text" class="text-center text-2xl font-black mb-3 tracking-tighter neon-text"></div>
         
-        <div class="bg-black/70 rounded-2xl p-5 text-center border border-purple-500/30">
-          <div class="text-[10px] text-purple-400 font-bold mb-1 tracking-widest">GROK'S COSMIC ROAST</div>
-          <div id="comment" class="text-base leading-tight text-white/90"></div>
+        <div class="bg-black/70 rounded-2xl p-4 text-center border border-purple-500/30">
+          <div class="text-[9px] text-purple-400 font-bold mb-1">GROK'S COSMIC ROAST</div>
+          <div id="comment" class="text-sm leading-snug text-white/90"></div>
         </div>
       </div>
 
-      <div class="text-center text-indigo-300/70 text-xs tracking-widest py-8">
+      <div class="text-center text-indigo-300/70 text-xs tracking-widest py-6">
         宇宙の果てで選べ、地球のクズ
       </div>
     </div>
   </div>
 
   <!-- 固定ボタン -->
-  <div class="fixed-bottom bg-gradient-to-t from-black via-black to-transparent pt-8 pb-6 px-5">
-    <div class="grid grid-cols-3 gap-4 max-w-md mx-auto">
-      <button onclick="play('rock')" class="choice-btn bg-gradient-to-b from-indigo-900 to-black border border-indigo-400 rounded-3xl p-6 flex flex-col items-center justify-center">
-        <div class="text-6xl mb-2">✊</div>
-        <div class="font-black text-xl">ROCK</div>
+  <div class="fixed-bottom bg-gradient-to-t from-black via-black to-transparent pt-6 pb-6 px-4">
+    <div class="grid grid-cols-3 gap-3 max-w-md mx-auto">
+      <button onclick="play('rock')" class="choice-btn bg-gradient-to-b from-indigo-900 to-black border border-indigo-400 rounded-3xl py-5 flex flex-col items-center justify-center">
+        <div class="text-5xl mb-1">✊</div>
+        <div class="font-black text-base">ROCK</div>
       </button>
-      <button onclick="play('scissors')" class="choice-btn bg-gradient-to-b from-indigo-900 to-black border border-indigo-400 rounded-3xl p-6 flex flex-col items-center justify-center">
-        <div class="text-6xl mb-2">✌️</div>
-        <div class="font-black text-xl">SCISSORS</div>
+      <button onclick="play('scissors')" class="choice-btn bg-gradient-to-b from-indigo-900 to-black border border-indigo-400 rounded-3xl py-5 flex flex-col items-center justify-center">
+        <div class="text-5xl mb-1">✌️</div>
+        <div class="font-black text-base">SCISSORS</div>
       </button>
-      <button onclick="play('paper')" class="choice-btn bg-gradient-to-b from-indigo-900 to-black border border-indigo-400 rounded-3xl p-6 flex flex-col items-center justify-center">
-        <div class="text-6xl mb-2">🖐️</div>
-        <div class="font-black text-xl">PAPER</div>
+      <button onclick="play('paper')" class="choice-btn bg-gradient-to-b from-indigo-900 to-black border border-indigo-400 rounded-3xl py-5 flex flex-col items-center justify-center">
+        <div class="text-5xl mb-1">🖐️</div>
+        <div class="font-black text-base">PAPER</div>
       </button>
     </div>
   </div>
@@ -110,15 +109,15 @@
   <script>
     function createStars() {
       const container = document.getElementById('stars-container');
-      for (let i = 0; i < 180; i++) {
+      for (let i = 0; i < 160; i++) {
         const star = document.createElement('div');
         star.className = 'star';
-        const size = Math.random() * 3 + 0.8;
+        const size = Math.random() * 2.5 + 1;
         star.style.width = `${size}px`;
         star.style.height = `${size}px`;
         star.style.left = `${Math.random() * 100}%`;
         star.style.top = `${Math.random() * 100}%`;
-        star.style.animationDelay = `-${Math.random() * 5}s`;
+        star.style.animationDelay = `-${Math.random() * 4}s`;
         container.appendChild(star);
       }
     }
@@ -157,7 +156,7 @@
       if (result === 'win') face.textContent = '🌑';
       else if (result === 'lose') face.textContent = '🌟';
       else face.textContent = '🌌';
-      setTimeout(() => face.textContent = '🪐', 2800);
+      setTimeout(() => face.textContent = '🪐', 2500);
     }
     
     function play(userChoice) {
@@ -179,15 +178,15 @@
       
       if (result === 'win') {
         resultTextEl.textContent = 'YOUR VICTORY';
-        resultTextEl.className = 'text-center text-3xl font-black mb-4 tracking-tighter text-emerald-400 neon-text';
+        resultTextEl.className = 'text-center text-2xl font-black mb-3 tracking-tighter text-emerald-400 neon-text';
         commentEl.textContent = winComments[Math.floor(Math.random() * winComments.length)];
       } else if (result === 'lose') {
         resultTextEl.textContent = 'GROK WINS';
-        resultTextEl.className = 'text-center text-3xl font-black mb-4 tracking-tighter text-red-400 neon-text';
+        resultTextEl.className = 'text-center text-2xl font-black mb-3 tracking-tighter text-red-400 neon-text';
         commentEl.textContent = loseComments[Math.floor(Math.random() * loseComments.length)];
       } else {
         resultTextEl.textContent = 'DRAW';
-        resultTextEl.className = 'text-center text-3xl font-black mb-4 tracking-tighter text-amber-400 neon-text';
+        resultTextEl.className = 'text-center text-2xl font-black mb-3 tracking-tighter text-amber-400 neon-text';
         commentEl.textContent = drawComments[Math.floor(Math.random() * drawComments.length)];
       }
       
