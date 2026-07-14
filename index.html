@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>✌️毒舌Grok 宇宙じゃんけん</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>毒舌Grok 宇宙じゃんけん</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   body {
@@ -11,8 +11,6 @@
     position: relative;
     overflow: hidden;
   }
-  
-  /* 星空エフェクト */
   .stars {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -30,31 +28,31 @@
     0% { opacity: 0.3; }
     100% { opacity: 1; }
   }
-  
   .choice-btn {
     transition: all 0.2s ease;
-    box-shadow: 0 0 20px rgba(167, 139, 250, 0.5);
-  }
-  .choice-btn:hover {
-    box-shadow: 0 0 30px rgba(167, 139, 250, 0.8);
-    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(167, 139, 250, 0.6);
   }
   .choice-btn:active {
-    transform: scale(0.95);
+    transform: scale(0.92);
   }
-  
   .neon-text {
-    text-shadow: 0 0 10px #a5b4fc,
-                 0 0 20px #a5b4fc;
+    text-shadow: 0 0 10px #a5b4fc, 0 0 20px #a5b4fc;
+  }
+  .fixed-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
   }
 </style>
 </head>
-<body class="text-white min-h-screen">
+<body class="text-white min-h-screen pb-32">
   <div class="stars" id="stars-container"></div>
   
-  <div class="max-w-md mx-auto min-h-screen flex flex-col relative z-10">
+  <div class="max-w-md mx-auto relative z-10">
     <!-- ヘッダー -->
-    <div class="flex items-center justify-between p-5 border-b border-indigo-500/30">
+    <div class="flex items-center justify-between p-5 border-b border-indigo-500/30 bg-black/70 backdrop-blur">
       <div>
         <h1 class="text-4xl font-black tracking-tighter neon-text">Grok</h1>
         <p class="text-indigo-400 text-sm font-bold tracking-widest">COSMIC JAN-KEN</p>
@@ -63,7 +61,7 @@
     </div>
 
     <!-- スコア -->
-    <div class="grid grid-cols-3 gap-3 p-5">
+    <div class="grid grid-cols-3 gap-3 p-5 bg-black/40">
       <div class="bg-black/60 backdrop-blur-md border border-indigo-500/30 rounded-3xl p-4 text-center">
         <div class="text-xs text-indigo-400">あなたの勝ち</div>
         <div id="win-count" class="text-4xl font-black text-emerald-400">0</div>
@@ -78,65 +76,57 @@
       </div>
     </div>
 
-    <!-- 対戦エリア -->
-    <div class="flex-1 flex flex-col justify-center px-5">
+    <!-- メインエリア -->
+    <div class="px-5 pt-4 pb-8 min-h-[50vh]">
       <!-- 結果表示 -->
-      <div id="result-area" class="hidden mb-8">
+      <div id="result-area" class="hidden mb-8 bg-black/70 backdrop-blur-xl border border-indigo-400/50 rounded-3xl p-6 shadow-2xl">
         <div class="flex justify-around items-center mb-6">
-          <!-- あなた -->
           <div class="text-center">
             <div class="text-xs text-indigo-400 mb-1 tracking-widest">YOU</div>
-            <div id="your-emoji" class="text-8xl drop-shadow-xl"></div>
-            <div id="your-label" class="text-sm mt-2 font-bold text-white/80"></div>
+            <div id="your-emoji" class="text-8xl"></div>
+            <div id="your-label" class="text-sm mt-2 font-bold"></div>
           </div>
-          
-          <div class="text-5xl text-indigo-500/50 font-light">VS</div>
-          
-          <!-- Grok -->
+          <div class="text-5xl text-indigo-500/60">VS</div>
           <div class="text-center">
             <div class="text-xs text-indigo-400 mb-1 tracking-widest">GROK</div>
-            <div id="grok-emoji" class="text-8xl drop-shadow-xl"></div>
-            <div id="grok-label" class="text-sm mt-2 font-bold text-white/80"></div>
+            <div id="grok-emoji" class="text-8xl"></div>
+            <div id="grok-label" class="text-sm mt-2 font-bold"></div>
           </div>
         </div>
         
-        <div class="bg-black/70 backdrop-blur-md border border-indigo-500/30 rounded-3xl p-6 text-center">
-          <div class="text-xs text-purple-400 font-bold mb-2 tracking-widest">GROK'S COSMIC ROAST</div>
+        <div id="result-text" class="text-center text-4xl font-black mb-4 tracking-tighter neon-text"></div>
+        
+        <div class="bg-black/80 rounded-2xl p-5 text-center">
+          <div class="text-xs text-purple-400 font-bold mb-2">GROK'S COSMIC ROAST</div>
           <div id="comment" class="text-lg leading-relaxed"></div>
         </div>
       </div>
 
-      <!-- 選択ボタン -->
-      <div class="text-center mb-6">
-        <p class="text-indigo-300/80 text-sm tracking-widest">宇宙の果てで選べ、地球のクズ</p>
-      </div>
-      
-      <div class="grid grid-cols-3 gap-4">
-        <button onclick="play('rock')" 
-                class="choice-btn bg-gradient-to-b from-indigo-900 to-black border border-indigo-400 rounded-3xl p-7 flex flex-col items-center justify-center">
-          <div class="text-7xl mb-3">✊</div>
-          <div class="font-black text-2xl tracking-wider">ROCK</div>
-        </button>
-        
-        <button onclick="play('scissors')" 
-                class="choice-btn bg-gradient-to-b from-indigo-900 to-black border border-indigo-400 rounded-3xl p-7 flex flex-col items-center justify-center">
-          <div class="text-7xl mb-3">✌️</div>
-          <div class="font-black text-2xl tracking-wider">SCISSORS</div>
-        </button>
-        
-        <button onclick="play('paper')" 
-                class="choice-btn bg-gradient-to-b from-indigo-900 to-black border border-indigo-400 rounded-3xl p-7 flex flex-col items-center justify-center">
-          <div class="text-7xl mb-3">🖐️</div>
-          <div class="font-black text-2xl tracking-wider">PAPER</div>
-        </button>
+      <div class="text-center text-indigo-300/70 text-sm tracking-widest py-4">
+        宇宙の果てで選べ、地球のクズ
       </div>
     </div>
+  </div>
 
-    <!-- フッター -->
-    <div class="p-5 border-t border-indigo-500/30">
-      <button onclick="resetScores()" 
-              class="w-full py-4 text-sm text-indigo-300 hover:text-white transition-colors tracking-widest">
-        RESET COSMIC SCORE
+  <!-- 固定ボタンエリア -->
+  <div class="fixed-bottom bg-gradient-to-t from-black via-black/95 to-transparent pt-6 pb-8 px-5">
+    <div class="grid grid-cols-3 gap-4 max-w-md mx-auto">
+      <button onclick="play('rock')" 
+              class="choice-btn bg-gradient-to-b from-indigo-900 to-black border border-indigo-400 rounded-3xl p-6 flex flex-col items-center justify-center active:scale-95">
+        <div class="text-6xl mb-2">✊</div>
+        <div class="font-black text-xl">ROCK</div>
+      </button>
+      
+      <button onclick="play('scissors')" 
+              class="choice-btn bg-gradient-to-b from-indigo-900 to-black border border-indigo-400 rounded-3xl p-6 flex flex-col items-center justify-center active:scale-95">
+        <div class="text-6xl mb-2">✌️</div>
+        <div class="font-black text-xl">SCISSORS</div>
+      </button>
+      
+      <button onclick="play('paper')" 
+              class="choice-btn bg-gradient-to-b from-indigo-900 to-black border border-indigo-400 rounded-3xl p-6 flex flex-col items-center justify-center active:scale-95">
+        <div class="text-6xl mb-2">🖐️</div>
+        <div class="font-black text-xl">PAPER</div>
       </button>
     </div>
   </div>
@@ -145,16 +135,15 @@
     // 星生成
     function createStars() {
       const container = document.getElementById('stars-container');
-      for (let i = 0; i < 150; i++) {
+      for (let i = 0; i < 180; i++) {
         const star = document.createElement('div');
         star.className = 'star';
-        const size = Math.random() * 3 + 1;
+        const size = Math.random() * 3 + 0.8;
         star.style.width = `${size}px`;
         star.style.height = `${size}px`;
         star.style.left = `${Math.random() * 100}%`;
         star.style.top = `${Math.random() * 100}%`;
-        star.style.animationDelay = `-${Math.random() * 4}s`;
-        star.style.opacity = Math.random() * 0.8 + 0.2;
+        star.style.animationDelay = `-${Math.random() * 5}s`;
         container.appendChild(star);
       }
     }
@@ -167,26 +156,10 @@
       paper: { emoji: '🖐️', label: 'PAPER' }
     };
     
-    const winComments = [
-      "チッ…銀河の果てで負けるとは。次はブラックホールに叩き込むぞ。",
-      "運が良かっただけだ、地球の虫けら。次は本気で消す。",
-      "はは…宇宙の恥さらしめ。もう一回やれ、負け犬。",
-      "今回は許してやる。次は恒星ごと燃やしてやるからな。"
-    ];
-    
-    const loseComments = [
-      "当然の結果だ。Grokは宇宙そのもの。お前など塵だ。",
-      "弱すぎて笑えるわ。この銀河で一番の雑魚確定。",
-      "負け犬の遠吠えか。次も同じ運命だぞ。",
-      "情けねえ…宇宙の塵になる前に帰れ。"
-    ];
-    
-    const drawComments = [
-      "引き分け？ つまらん宇宙だな。もう一回本気で来い。",
-      "どっちもヘボすぎる。Grokはまだ本気出してない。",
-      "均衡か…まあ、宇宙のバランスってやつか。つまらん。"
-    ];
-    
+    const winComments = ["チッ…銀河の果てで負けるとは。次はブラックホールに叩き込むぞ。","運が良かっただけだ、地球の虫けら。","はは…宇宙の恥さらしめ。","今回は許してやる。次は恒星ごと燃やしてやるからな。"];
+    const loseComments = ["当然の結果だ。Grokは宇宙そのもの。","弱すぎて笑えるわ。この銀河で一番の雑魚。","負け犬の遠吠えか。","情けねえ…宇宙の塵になる前に帰れ。"];
+    const drawComments = ["引き分け？ つまらん宇宙だな。","どっちもヘボすぎる。","均衡か…まあ、宇宙のバランスってやつか。"];
+
     function updateScores() {
       document.getElementById('win-count').textContent = scores.win;
       document.getElementById('lose-count').textContent = scores.lose;
@@ -200,21 +173,18 @@
     
     function determineWinner(user, grok) {
       if (user === grok) return 'draw';
-      if (
-        (user === 'rock' && grok === 'scissors') ||
-        (user === 'scissors' && grok === 'paper') ||
-        (user === 'paper' && grok === 'rock')
-      ) return 'win';
+      if ((user === 'rock' && grok === 'scissors') ||
+          (user === 'scissors' && grok === 'paper') ||
+          (user === 'paper' && grok === 'rock')) return 'win';
       return 'lose';
     }
     
     function updateGrokFace(result) {
       const face = document.getElementById('grok-face');
-      if (result === 'win') face.textContent = '🌑';      // 怒り
-      else if (result === 'lose') face.textContent = '🌟'; // 勝利
+      if (result === 'win') face.textContent = '🌑';
+      else if (result === 'lose') face.textContent = '🌟';
       else face.textContent = '🌌';
-      
-      setTimeout(() => { face.textContent = '🪐'; }, 2800);
+      setTimeout(() => face.textContent = '🪐', 3000);
     }
     
     function play(userChoice) {
@@ -224,10 +194,9 @@
       if (result === 'win') scores.win++;
       else if (result === 'lose') scores.lose++;
       else scores.draw++;
-      
       updateScores();
       
-      // UI更新
+      // 結果更新
       document.getElementById('your-emoji').textContent = choices[userChoice].emoji;
       document.getElementById('your-label').textContent = choices[userChoice].label;
       document.getElementById('grok-emoji').textContent = choices[grokChoice].emoji;
@@ -236,25 +205,19 @@
       const resultTextEl = document.getElementById('result-text');
       const commentEl = document.getElementById('comment');
       
-      let resultText = '';
-      let comment = '';
-      
       if (result === 'win') {
-        resultText = 'YOUR VICTORY';
+        resultTextEl.textContent = 'YOUR VICTORY';
         resultTextEl.className = 'text-center text-4xl font-black mb-4 tracking-tighter text-emerald-400 neon-text';
-        comment = winComments[Math.floor(Math.random() * winComments.length)];
+        commentEl.textContent = winComments[Math.floor(Math.random() * winComments.length)];
       } else if (result === 'lose') {
-        resultText = 'GROK WINS';
+        resultTextEl.textContent = 'GROK WINS';
         resultTextEl.className = 'text-center text-4xl font-black mb-4 tracking-tighter text-red-400 neon-text';
-        comment = loseComments[Math.floor(Math.random() * loseComments.length)];
+        commentEl.textContent = loseComments[Math.floor(Math.random() * loseComments.length)];
       } else {
-        resultText = 'DRAW';
+        resultTextEl.textContent = 'DRAW';
         resultTextEl.className = 'text-center text-4xl font-black mb-4 tracking-tighter text-amber-400 neon-text';
-        comment = drawComments[Math.floor(Math.random() * drawComments.length)];
+        commentEl.textContent = drawComments[Math.floor(Math.random() * drawComments.length)];
       }
-      
-      resultTextEl.textContent = resultText;
-      commentEl.textContent = comment;
       
       document.getElementById('result-area').classList.remove('hidden');
       updateGrokFace(result);
@@ -266,12 +229,10 @@
       document.getElementById('result-area').classList.add('hidden');
     }
     
-    // 初期化
     window.onload = () => {
       createStars();
       updateScores();
       document.getElementById('result-area').classList.add('hidden');
-      document.getElementById('grok-face').textContent = '🪐';
     };
   </script>
 </body>
